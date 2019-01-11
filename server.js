@@ -27,18 +27,17 @@ function count() {
     if( typeof count.counter == 'undefined' ) {
         count.counter = 0;
     }
-    foo.counter++;
-    document.write(foo.counter+"<br />");
+    return count.counter++;
 }
 
 var urlDB = mongoose.model('URLDB', urlShort);
 app.use(
   bodyParser.urlencoded({extended: false}))
 app.post('/api/shorturl/new', (req, res) => {
-  var entry = new urlDB({url: "Priyesh", age: 21})
+  var entry = new urlDB({url: req.body.url, ref: count()})
 
   var createAndSavePerson = function(done) {
-    person.save(function(err, data) {
+    entry.save(function(err, data) {
       if(err) return done(err)
       console.log(data)
       return done(null , data);
