@@ -4,6 +4,8 @@ var express = require('express');
 var mongo = require('mongodb');
 var mongoose = require('mongoose');
 
+mongoose.connect(process.env.MONGO_URI)
+
 var cors = require('cors');
 
 var app = express();
@@ -13,6 +15,13 @@ var port = process.env.PORT || 3000;
 
 /** this project needs a db !! **/ 
 // mongoose.connect(process.env.MONGOLAB_URI);
+
+var Schema = mongoose.Schema
+var personSchema = new Schema({
+  name : {type: String, requiredd: true},
+  age : Number,
+  favoriteFoods : [String]
+})
 
 app.use(cors());
 
@@ -25,6 +34,7 @@ app.get('/', function(req, res){
   res.sendFile(process.cwd() + '/views/index.html');
 });
 
+app.post('/api/shorturl/new')
   
 // your first API endpoint... 
 app.get("/api/hello", function (req, res) {
