@@ -17,10 +17,15 @@ var port = process.env.PORT || 3000;
 // mongoose.connect(process.env.MONGOLAB_URI);
 
 var Schema = mongoose.Schema
-var personSchema = new Schema({
-  name : {type: String, requiredd: true},
-  age : Number,
-  favoriteFoods : [String]
+var urlShort = new Schema({
+  url : {type: String, requiredd: true},
+  ref : Number
+})
+
+var urlDB = mongoose.model('URLDB', urlShort);
+
+app.post('/api/shorturl/new', (req, res) => {
+  
 })
 
 app.use(cors());
@@ -33,8 +38,6 @@ app.use('/public', express.static(process.cwd() + '/public'));
 app.get('/', function(req, res){
   res.sendFile(process.cwd() + '/views/index.html');
 });
-
-app.post('/api/shorturl/new')
   
 // your first API endpoint... 
 app.get("/api/hello", function (req, res) {
