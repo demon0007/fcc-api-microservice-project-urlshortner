@@ -3,7 +3,7 @@
 var express = require('express');
 var mongo = require('mongodb');
 var mongoose = require('mongoose');
-
+var bodyParser = require('body-parser')
 mongoose.connect(process.env.MONGO_URI)
 
 var cors = require('cors');
@@ -22,10 +22,28 @@ var urlShort = new Schema({
   ref : Number
 })
 
-var urlDB = mongoose.model('URLDB', urlShort);
+function count() {
 
+    if( typeof count.counter == 'undefined' ) {
+        count.counter = 0;
+    }
+    foo.counter++;
+    document.write(foo.counter+"<br />");
+}
+
+var urlDB = mongoose.model('URLDB', urlShort);
+app.use(
+  bodyParser.urlencoded({extended: false}))
 app.post('/api/shorturl/new', (req, res) => {
-  
+  var entry = new urlDB({url: "Priyesh", age: 21})
+
+  var createAndSavePerson = function(done) {
+    person.save(function(err, data) {
+      if(err) return done(err)
+      console.log(data)
+      return done(null , data);
+    });
+  };
 })
 
 app.use(cors());
