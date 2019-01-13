@@ -34,7 +34,10 @@ var urlDB = mongoose.model('URLDB', urlShort);
 app.use(
   bodyParser.urlencoded({extended: false}))
 app.post('/api/shorturl/new', (req, res) => {
-  var entry = new urlDB({url: req.body.url, ref: count()})
+  // console.log(req.body.url)
+  let num = count()
+  res.json({"original_url":req.body.url,"short_url":num})
+  var entry = new urlDB({url: req.body.url, ref: num})
 
   var createAndSavePerson = function(done) {
     entry.save(function(err, data) {
@@ -43,6 +46,8 @@ app.post('/api/shorturl/new', (req, res) => {
       return done(null , data);
     });
   };
+  
+  console.log(createAndSavePerson())
 })
 
 app.use(cors());
