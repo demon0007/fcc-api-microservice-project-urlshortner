@@ -56,16 +56,17 @@ app.post('/api/shorturl/new', (req, res) => {
   query.select(['url', 'ref'])
   query.exec((err, result) => {
     if(err) console.log(err)
-    console.log("Success")
-    console.log(result)
+    // console.log("Success")
+    // console.log(result.length)
     if (result.length > 0){
       found = true
-      res.json({"original_url":result[0].url,"short_url":result[0].num})
+      console.log(result[0].ref)
+      res.json({"original_url":result[0].url,"short_url":result[0].ref})
     }
   })
   if (!found) {
+    console.log("Not Found")
     let num = count()
-    res.json({"original_url":req.body.url,"short_url":num})
     var entry = new urlDB({url: req.body.url, ref: num})
     var createAndSavePerson = function(done) {
       entry.save(function(err, data) {
@@ -73,6 +74,8 @@ app.post('/api/shorturl/new', (req, res) => {
         return done(null , data);
       });
     };
+    createAndSavePerson(doneFunc)
+    res.json({"original_url":req.body.url,"short_url":num})
   }
 })
 
