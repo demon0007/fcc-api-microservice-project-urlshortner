@@ -53,9 +53,14 @@ app.use(
 app.post('/api/shorturl/new', (req, res) => {
   // console.log(req.body.url)
   var postURL = req.body.url;
-  
-  dns.lookup(postURL, (err, address, family) => {
-    
+  let splitURL = postURL.split('.')
+  dns.lookup(splitURL[splitURL.length-2]+'.'+splitURL[splitURL.length-1], (err, address, family) => {
+    if (err) {
+      console.log(err)
+      console.log("Wrong URL")
+    } else {
+      console.log('address: %j family: IPv%s', address, family)
+    }
   })
   
   
