@@ -44,23 +44,28 @@ app.post('/api/shorturl/new', (req, res) => {
   // console.log(req.body.url)
   var postURL = req.body.url;
   var query = urlDB.find({url: postURL})
+  let found = false;
   query.select(['url', 'ref'])
   query.exec((err, result) => {
     if(err) console.log(err)
     console.log("Success")
     console.log(result)
-    res.json({})
+    if (result.length > 0){
+      found = true
+      res.json({"original_url":result[0].url,"short_url":result[0].num})
+    }
   })
-  return
-  let num = count()
-  res.json({"original_url":req.body.url,"short_url":num})
-  var entry = new urlDB({url: req.body.url, ref: num})
-  var createAndSavePerson = function(done) {
-    entry.save(function(err, data) {
-      if(err) return done(err)
-      return done(null , data);
-    });
-  };
+  if (!found) {
+    let num = count()
+    res.json({"original_url":req.body.url,"short_url":num})
+    var entry = new urlDB({url: req.body.url, ref: num})
+    var createAndSavePerson = function(done) {
+      entry.save(function(err, data) {
+        if(err) return done(err)
+        return done(null , data);
+      });
+    };
+  }
 })
 
 app.use(cors());
