@@ -4,6 +4,8 @@ var express = require('express');
 var mongo = require('mongodb');
 var mongoose = require('mongoose');
 var bodyParser = require('body-parser')
+const dns = require('dns')
+
 mongoose.connect(process.env.MONGO_URI)
 
 var cors = require('cors');
@@ -51,32 +53,39 @@ app.use(
 app.post('/api/shorturl/new', (req, res) => {
   // console.log(req.body.url)
   var postURL = req.body.url;
+  
+  dns.lookup(postURL, (err, address, family) => {
+    
+  })
+  
+  
+  
+  
   var query = urlDB.find({url: postURL})
-  let found = false;
+  let num
   query.select(['url', 'ref'])
   query.exec((err, result) => {
     if(err) console.log(err)
     // console.log("Success")
     // console.log(result.length)
     if (result.length > 0){
-      found = true
       console.log(result[0].ref)
-      res.json({"original_url":result[0].url,"short_url":result[0].ref})
+      num = result[0].ref
+      res.json({"original_url":postURL, "short_url":num})
+    } else {
+      console.log("Not Found")
+      num = count()
+      var entry = new urlDB({url: req.body.url, ref: num})
+      var createAndSavePerson = function(done) {
+        entry.save(function(err, data) {
+          if(err) return done(err)
+          return done(null , data);
+        });
+      };
+      createAndSavePerson(doneFunc)
+      res.json({"original_url":postURL, "short_url":num})
     }
   })
-  if (!found) {
-    console.log("Not Found")
-    let num = count()
-    var entry = new urlDB({url: req.body.url, ref: num})
-    var createAndSavePerson = function(done) {
-      entry.save(function(err, data) {
-        if(err) return done(err)
-        return done(null , data);
-      });
-    };
-    createAndSavePerson(doneFunc)
-    res.json({"original_url":req.body.url,"short_url":num})
-  }
 })
 
 app.use(cors());
