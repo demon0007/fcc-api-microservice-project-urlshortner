@@ -42,7 +42,14 @@ app.use(
   bodyParser.urlencoded({extended: false}))
 app.post('/api/shorturl/new', (req, res) => {
   // console.log(req.body.url)
-  
+  var postURL = req.body.url;
+  var query = urlDB.find({url: postURL})
+  query.sort({name: 1}).limit(2).select(['name', 'favoriteFoods'])
+  query.exec((err, result) => {
+    if(err) console.log(err)
+    console.log("Success")
+    console.log(result)
+  })
   
   let num = count()
   res.json({"original_url":req.body.url,"short_url":num})
