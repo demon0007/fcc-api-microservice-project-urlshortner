@@ -23,11 +23,19 @@ var urlShort = new Schema({
 })
 
 function count() {
-
-    if( typeof count.counter == 'undefined' ) {
-        count.counter = 0;
-    }
-    return count.counter++;
+    let counter = Math.random().toFixed(2)*100
+    var query = urlDB.find({ref: counter})
+    let found = true;
+    query.select(['url', 'ref'])
+    query.exec((err, result) => {
+      if(err) console.log(err)
+      if (result.length > 0){
+        found = false
+        count()
+      }
+    })
+    if (found)
+      return counter
 }
 
 
