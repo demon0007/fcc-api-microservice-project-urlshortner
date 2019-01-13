@@ -30,19 +30,23 @@ function count() {
     return count.counter++;
 }
 
+
+  let doneFunc = (err, data) => {
+    if (err) console.log(err)
+    console.log("Success")
+    console.log(data)
+  }
+
 var urlDB = mongoose.model('URLDB', urlShort);
 app.use(
   bodyParser.urlencoded({extended: false}))
 app.post('/api/shorturl/new', (req, res) => {
   // console.log(req.body.url)
+  
+  
   let num = count()
   res.json({"original_url":req.body.url,"short_url":num})
   var entry = new urlDB({url: req.body.url, ref: num})
-  
-  let doneFunc = (err, data) => {
-    console.log(data)
-  }
-  
   var createAndSavePerson = function(done) {
     entry.save(function(err, data) {
       if(err) return done(err)
