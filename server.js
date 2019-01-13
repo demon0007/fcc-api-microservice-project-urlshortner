@@ -57,40 +57,46 @@ app.post('/api/shorturl/new', (req, res) => {
   dns.lookup(splitURL[splitURL.length-2]+'.'+splitURL[splitURL.length-1], (err, address, family) => {
     if (err) {
       console.log(err)
-      console.log("Wrong URL")
+      res.json({"error":"invalid URL"})
     } else {
-      console.log('address: %j family: IPv%s', address, family)
+      var query = urlDB.find({url: postURL})
+      let num
+      query.select(['url', 'ref'])
+      query.exec((err, result) => {
+        if(err) console.log(err)
+        if (result.length > 0){
+          console.log(result[0].ref)
+          num = result[0].ref
+          res.json({"original_url":postURL, "short_url":num})
+        } else {
+          console.log("Not Found")
+          num = count()
+          var entry = new urlDB({url: req.body.url, ref: num})
+          var createAndSavePerson = function(done) {
+            entry.save(function(err, data) {
+              if(err) return done(err)
+              return done(null , data);
+            });
+          };
+          createAndSavePerson(doneFunc)
+          res.json({"original_url":postURL, "short_url":num})
+        }
+      })
     }
   })
-  
-  
-  
-  
-  var query = urlDB.find({url: postURL})
-  let num
-  query.select(['url', 'ref'])
-  query.exec((err, result) => {
-    if(err) console.log(err)
-    // console.log("Success")
-    // console.log(result.length)
-    if (result.length > 0){
-      console.log(result[0].ref)
-      num = result[0].ref
-      res.json({"original_url":postURL, "short_url":num})
-    } else {
-      console.log("Not Found")
-      num = count()
-      var entry = new urlDB({url: req.body.url, ref: num})
-      var createAndSavePerson = function(done) {
-        entry.save(function(err, data) {
-          if(err) return done(err)
-          return done(null , data);
-        });
-      };
-      createAndSavePerson(doneFunc)
-      res.json({"original_url":postURL, "short_url":num})
-    }
-  })
+})
+
+app.get('/api/shorturl/:ref', (req, res) => {
+  var query = urlDB.find({ref: req.params.ref})
+      query.select(['url', 'ref'])
+      query.exec((err, result) => {
+        if(err) console.log(err)
+        if (result.length > 0){
+          res.redirect(result[0].url)
+        } else {
+          res.json({"error":"invalid URL"})
+        }
+      })
 })
 
 app.use(cors());
