@@ -38,16 +38,17 @@ app.post('/api/shorturl/new', (req, res) => {
   let num = count()
   res.json({"original_url":req.body.url,"short_url":num})
   var entry = new urlDB({url: req.body.url, ref: num})
-
+  
+  let doneFunc = (err, data) => {
+    console.log(data)
+  }
+  
   var createAndSavePerson = function(done) {
     entry.save(function(err, data) {
       if(err) return done(err)
-      console.log(data)
       return done(null , data);
     });
   };
-  
-  console.log(createAndSavePerson())
 })
 
 app.use(cors());
